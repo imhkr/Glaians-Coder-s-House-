@@ -12,10 +12,9 @@ import { useLoadingWithRefresh } from "./hooks/useLoadingWithRefresh";
 import Loader from "./components/shared/Loader/Loader";
 import AddUser from "./components/Posts/AddUser";
 import AllUsers from "./components/Posts/AllUsers";
-import CodeForInterview from "./components/Posts/CodeForInterview";
 import EditUser from "./components/Posts/EditUser";
-import NavBar from "./components/Posts/NavBar";
 import NotFound from "./components/Posts/NotFound";
+import CPCalendar from "./components/CPCalendar/CPCalendar";
 function App() {
   // call refresh endpoint
   const { loading } = useLoadingWithRefresh();
@@ -44,14 +43,17 @@ function App() {
         <ProtectedRoute path="/user-profile">
           <UserProfile />
         </ProtectedRoute>
-        <ProtectedRoute path="/all">
+        <ProtectedRoute path="/allarticles">
           <AllUsers />
         </ProtectedRoute>
-        <ProtectedRoute path="/add">
+        <ProtectedRoute path="/addArticle">
           <AddUser />
         </ProtectedRoute>
         <ProtectedRoute path="/edit/:id">
           <EditUser />
+        </ProtectedRoute>
+        <ProtectedRoute path="/upcomingcontests">
+          <CPCalendar />
         </ProtectedRoute>
       </Switch>
     </BrowserRouter>

@@ -1,22 +1,15 @@
 import react, { useEffect, useState } from "react";
-import {
-  FormGroup,
-  FormControl,
-  InputLabel,
-  Input,
-  Button,
-  styled,
-  Typography,
-} from "@mui/material";
-
-// import { addUser } from "../../Service/api";
-// import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { useHistory } from "react-router-dom";
 import { addUser } from "../../Service/api";
 import { useSelector } from "react-redux";
 import TextInput from "../shared/TextInput/TextInput";
+import TextArea from "../shared/TextArea/TextArea";
 import Card from "../shared/Card/Card";
-import styles from "./AllUsers.module.css";
+import styles from "./AddUser.module.css";
+import Button from "../shared/Button/Button";
+import axios from "axios";
 const initialValue = {
   Heading: "",
   Content: "",
@@ -24,14 +17,6 @@ const initialValue = {
   CreatorId: "",
   CreatorName: "",
 };
-
-const Container = styled(FormGroup)`
-    text-color:"red";
-    width: 50%;
-    margin: 5% 0 0 25%;
-    & > div {
-        margin-top: 20px;
-`;
 
 const AddUser = () => {
   const history = useHistory();
@@ -41,6 +26,19 @@ const AddUser = () => {
   const onValueChange = (e) => {
     setData({ ...data, [e.target.name]: e.target.value });
   };
+  const [imageLink, setImageLink] = useState("");
+  let ind = Math.floor(Math.random() * 30);
+  const URL =
+    "https://api.unsplash.com/search/photos?page=3&&per_page=101&query=technology&client_id=L1-B1K0i6IQSGC4v7KNQmDCovA-KOgHWJZjUTodM_mY";
+  const getImages = async () => {
+    const response = await axios.get(URL);
+    console.log(response);
+    let link = response.data.results[ind]["urls"]["full"];
+    setImageLink(link);
+  };
+  useEffect(() => {
+    getImages();
+  }, []);
 
   const obj = {
     Heading: Heading,
@@ -48,83 +46,74 @@ const AddUser = () => {
     Category: Category,
     CreatorName: user.name,
     CreatorId: user.id,
+    ImageLink: imageLink,
   };
+  let allFilled = true;
   const addUserDetails = async () => {
-    await addUser(obj);
+    if (Heading == "" || Content == "" || Category == " ") {
+      allFilled = false;
+      (function showToastMessage() {
+        toast.error("Kindly fill all required fields !", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+      })();
+    } else {
+      await addUser(obj);
+    }
   };
   const redirect = () => {
-    history.push(`/all`);
+    if (allFilled) {
+      history.push(`/allarticles`);
+    } else {
+      history.push("/addArticle");
+    }
   };
 
   return (
     <>
-      <Card title="What’s your full name?" icon="goggle-emoji">
-        <label for="html">Heading</label>
-
+      <Card title="Create a fantastic article!!" icon="win">
+        <label htmlFor="Heading">Heading</label>
         <TextInput
           onChange={(e) => onValueChange(e)}
           name="Heading"
           value={Heading}
           id="my-input"
         />
-        <TextInput value="FullName" type="textField" />
-        <TextInput value="FullName" />
-        <TextInput value="FullName" />
-        <p className={styles.paragraph}>Please use your real name 🙏</p>
-        <div>
-          <Button text="Next" />
-        </div>
+        <label htmlFor="Content">Content</label>
+        <TextArea
+          rows="10"
+          col="0"
+          onChange={(e) => onValueChange(e)}
+          name="Content"
+          value={Content}
+          id="my-input"
+        />
+        <label htmlFor="Category">Category</label>
+        <TextInput
+          onChange={(e) => onValueChange(e)}
+          name="Category"
+          value={Category}
+          id="my-input"
+        />
+        <label htmlFor="CreatorName">CreatorName</label>
+        <TextInput name="CreatorName" value={user?.name} id="my-input" />
+        <label htmlFor="CreatorId">CreatorId</label>
+        <TextInput name="CreatorId" value={user?.id} id="my-input" />
       </Card>
-
-      {
-        "" /* <Container>
-        <Typography variant="h4">Add Post</Typography>
-        <FormControl>
-          <InputLabel htmlFor="my-input">Heading</InputLabel>
-          <Input
-            onChange={(e) => onValueChange(e)}
-            name="Heading"
-            value={Heading}
-            id="my-input"
-          />
-        </FormControl>
-        <FormControl>
-          <InputLabel htmlFor="my-input">Content</InputLabel>
-          <Input
-            onChange={(e) => onValueChange(e)}
-            name="Content"
-            value={Content}
-            id="my-input"
-          />
-        </FormControl>
-        <FormControl>
-          <InputLabel htmlFor="my-input">Category</InputLabel>
-          <Input
-            onChange={(e) => onValueChange(e)}
-            name="Category"
-            value={Category}
-            id="my-input"
-          />
-        </FormControl>
-        <FormControl>
-          <InputLabel htmlFor="my-input">CreatorName</InputLabel>
-          <Input name="CreatorName" value={user.name} id="my-input" />
-        </FormControl>
-
-        <FormControl>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={function (event) {
-              addUserDetails();
-              redirect();
-            }}
-          >
-            Add User
-          </Button>
-        </FormControl>
-      </Container> */
-      }
+      <div className={styles.gap}>
+        <Button
+          variant="contained"
+          color="primary"
+          imgTrue={true}
+          onClick={function (event) {
+            addUserDetails();
+            redirect();
+          }}
+        >
+          Add User
+        </Button>
+      </div>
+      <ToastContainer />;
     </>
   );
 };

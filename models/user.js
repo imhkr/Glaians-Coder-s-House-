@@ -10,6 +10,7 @@ const userSchema = mongoose.Schema({
   Category: String,
   CreatorId: String,
   CreatorName: String,
+  ImageLink: String,
 });
 
 autoIncrement.initialize(mongoose.connection);

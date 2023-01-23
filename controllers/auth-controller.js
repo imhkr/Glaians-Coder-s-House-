@@ -8,13 +8,9 @@ const postArticles = require("../models/user");
 class AuthController {
   // Get all users
   async getUsers(request, response) {
-    console.log("Hell0");
-    // console.log("I came in Upper getUsers");
-
     try {
-      console.log("I came in getUsers");
       const users = await postArticles.find({});
-      console.log("response users", users);
+
       response.status(200).json(users);
     } catch (error) {
       response.status(404).json({ message: error.message });
@@ -23,7 +19,6 @@ class AuthController {
   // Save data of the user in database
   async addUser(request, response) {
     const user = request.body;
-    console.log("add called");
     const newUser = new postArticles(user);
     try {
       await newUser.save();
@@ -86,7 +81,6 @@ class AuthController {
         otp,
       });
     } catch (err) {
-      console.log(err);
       res.status(500).json({ message: "message sending failed" });
     }
   }
@@ -115,7 +109,6 @@ class AuthController {
         user = await userService.createUser({ phone });
       }
     } catch (err) {
-      console.log(err);
       res.status(500).json({ message: "Db error" });
     }
 

@@ -96,7 +96,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on(ACTIONS.MUTE, ({ roomId, userId }) => {
-    console.log("mute on server", userId);
+    // console.log("mute on server", userId);
     const clients = Array.from(io.sockets.adapter.rooms.get(roomId) || []);
     clients.forEach((clientId) => {
       io.to(clientId).emit(ACTIONS.MUTE, {
@@ -107,7 +107,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on(ACTIONS.UNMUTE, ({ roomId, userId }) => {
-    console.log("unmute on server", userId);
+    // console.log("unmute on server", userId);
     const clients = Array.from(io.sockets.adapter.rooms.get(roomId) || []);
     clients.forEach((clientId) => {
       io.to(clientId).emit(ACTIONS.UNMUTE, {
@@ -119,7 +119,7 @@ io.on("connection", (socket) => {
 
   const leaveRoom = () => {
     const { rooms } = socket;
-    console.log("leaving", rooms);
+    // console.logconsole.log("leaving", rooms);
 
     Array.from(rooms).forEach((roomId) => {
       const clients = Array.from(io.sockets.adapter.rooms.get(roomId) || []);

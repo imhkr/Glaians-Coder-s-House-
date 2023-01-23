@@ -1,18 +1,15 @@
 import { useState, useEffect } from "react";
-
-import {
-  FormGroup,
-  FormControl,
-  InputLabel,
-  Input,
-  Button,
-  styled,
-  Typography,
-} from "@mui/material";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { useParams } from "react-router-dom";
 import { getUser, editUser } from "../../Service/api";
 import { useHistory } from "react-router-dom";
 import { useSelector } from "react-redux";
+import styles from "./EditUser.module.css";
+import Button from "../shared/Button/Button";
+import Card from "../shared/Card/Card";
+import TextArea from "../shared/TextArea/TextArea";
+import TextInput from "../shared/TextInput/TextInput";
 const initialValue = {
   Heading: "",
   Content: "",
@@ -20,13 +17,6 @@ const initialValue = {
   CreatorId: "",
   CreatorName: "",
 };
-
-const Container = styled(FormGroup)`
-    width: 50%;
-    margin: 5% 0 0 25%;
-    & > div {
-        margin-top: 20px
-`;
 
 const EditUser = () => {
   const history = useHistory();
@@ -37,66 +27,69 @@ const EditUser = () => {
   const onValueChange = (e) => {
     setData({ ...data, [e.target.name]: e.target.value });
   };
-  const obj = {
-    Heading: Heading,
-    Content: Content,
-    Category: Category,
-    CreatorName: user.name,
-    CreatorId: user.id,
-  };
   useEffect(() => {
     loadUserDetails();
   }, []);
 
   const loadUserDetails = async () => {
     const response = await getUser(id);
-    console.log(response);
     setData(response.data);
   };
 
+  let allFilled = true;
   const editUserDetails = async () => {
-    const response = await editUser(id, data);
+    if (Heading == "" || Content == "" || Category == " ") {
+      allFilled = false;
+      (function showToastMessage() {
+        toast.error("Kindly fill all required fields !", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+      })();
+    } else {
+      const response = await editUser(id, data);
+    }
   };
   const redirect = () => {
-    history.push(`/all`);
+    if (allFilled) {
+      history.push(`/allarticles`);
+    } else {
+      history.push("/addArticle");
+    }
   };
 
   return (
-    <Container>
-      <Typography variant="h4">Add Post</Typography>
-      <FormControl>
-        <InputLabel htmlFor="my-input">Heading</InputLabel>
-        <Input
+    <>
+      <Card title="Create a fantastic article!!" icon="win">
+        <label htmlFor="Heading">Heading</label>
+        <TextInput
           onChange={(e) => onValueChange(e)}
           name="Heading"
           value={Heading}
           id="my-input"
         />
-      </FormControl>
-      <FormControl>
-        <InputLabel htmlFor="my-input">Content</InputLabel>
-        <Input
+        <label htmlFor="Content">Content</label>
+        <TextArea
+          rows="10"
+          col="0"
           onChange={(e) => onValueChange(e)}
           name="Content"
           value={Content}
           id="my-input"
         />
-      </FormControl>
-      <FormControl>
-        <InputLabel htmlFor="my-input">Category</InputLabel>
-        <Input
+        <label htmlFor="Category">Category</label>
+        <TextInput
           onChange={(e) => onValueChange(e)}
           name="Category"
           value={Category}
           id="my-input"
         />
-      </FormControl>
-      <FormControl>
-        <InputLabel htmlFor="my-input">CreatorName</InputLabel>
-        <Input name="CreatorName" value={user.name} id="my-input" />
-      </FormControl>
+        <label htmlFor="CreatorName">CreatorName</label>
+        <TextInput name="CreatorName" value={user?.name} id="my-input" />
+        <label htmlFor="CreatorId">CreatorId</label>
+        <TextInput name="CreatorId" value={user?.id} id="my-input" />
+      </Card>
 
-      <FormControl>
+      <div className={styles.gap}>
         <Button
           variant="contained"
           color="primary"
@@ -104,11 +97,10 @@ const EditUser = () => {
             editUserDetails();
             redirect();
           }}
-        >
-          Update User
-        </Button>
-      </FormControl>
-    </Container>
+          text="Update Article"
+        ></Button>
+      </div>
+    </>
   );
 };
 

@@ -4,7 +4,7 @@ import { logout } from "../../../http";
 import styles from "./Navigation.module.css";
 import { useDispatch, useSelector } from "react-redux";
 import { setAuth } from "../../../store/authSlice";
-
+import Button from "../Button/Button";
 const Navigation = () => {
   const brandStyle = {
     color: "#fff",
@@ -37,6 +37,14 @@ const Navigation = () => {
       </Link>
       {isAuth && (
         <div className={styles.navRight}>
+          <div className={styles.articlesButton}>
+            <Link to="/allarticles" style={brandStyle}>
+              <Button text="Articles" imgTrue={false} />
+            </Link>
+            <Link to="/upcomingcontests" style={brandStyle} className="leftgap">
+              <Button text="Contests" imgTrue={false} />
+            </Link>
+          </div>
           <h3>{user?.name}</h3>
           <Link to="/user-profile">
             <img

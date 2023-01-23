@@ -7,7 +7,8 @@ import { setAvatar } from "../../../store/activateSlice";
 import { activate } from "../../../http";
 import { setAuth } from "../../../store/authSlice";
 import Loader from "../../../components/shared/Loader/Loader";
-
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 const StepAvatar = ({ onNext }) => {
   const dispatch = useDispatch();
   const { name, avatar } = useSelector((state) => state.activate);
@@ -26,7 +27,11 @@ const StepAvatar = ({ onNext }) => {
   }
   async function submit() {
     if (!avatar) {
-      alert("Please Upload Your Profile Picture");
+      (function showToastMessage() {
+        toast.error("Please Upload Your Profile Picture", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+      })();
       return;
     }
     setLoading(true);
@@ -57,6 +62,9 @@ const StepAvatar = ({ onNext }) => {
     <>
       <Card title={`Okay, ${name}`} icon="monkey-emoji">
         <p className={styles.subHeading}>How’s this photo?</p>
+        <h6 className={styles.subHeading}>
+          *Photo size should be less than 40KB{" "}
+        </h6>
         <div className={styles.avatarWrapper}>
           <img className={styles.avatarImage} src={image} alt="avatar" />
         </div>
@@ -75,6 +83,7 @@ const StepAvatar = ({ onNext }) => {
           <Button onClick={submit} text="Next" />
         </div>
       </Card>
+      <ToastContainer />
     </>
   );
 };

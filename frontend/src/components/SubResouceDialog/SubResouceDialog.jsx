@@ -2,32 +2,66 @@ import React, { useState, useEffect } from "react";
 import styles from "./SubResourceDialog.module.css";
 import { useHistory } from "react-router-dom";
 import { getUser, deleteUser, getUsers } from "../../Service/api";
-import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useSelector } from "react-redux";
 const SubResouceDialog = ({ postId }) => {
   const [users, setUsers] = useState([]);
+  const [userInfo, setUserInfo] = useState([]);
   const history = useHistory();
+  const { user } = useSelector((state) => state.auth);
   useEffect(() => {
     getPost(postId);
+    loadUserDetails(postId);
+
+    return () => {
+      getPost(postId);
+      loadUserDetails(postId);
+      getAllUsers();
+    };
   }, [postId]);
-  function editPost(postId) {
-    history.push(`/edit/${postId}`);
+  let CreatorId;
+  let response;
+
+  const loadUserDetails = async (postId) => {
+    response = await getUser(postId);
+    CreatorId = response["data"]["CreatorId"];
+    setUserInfo(response);
+  };
+  async function editPost(postId) {
+    response = await getUser(postId);
+    CreatorId = response["data"]["CreatorId"];
+    if (CreatorId == user.id) {
+      history.push(`/edit/${postId}`);
+    } else {
+      (function showToastMessage() {
+        toast.error("You are not owner of this article", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+      })();
+    }
   }
   const deleteUserData = async (id) => {
-    await deleteUser(id);
-    getAllUsers();
+    response = await getUser(postId);
+    CreatorId = response["data"]["CreatorId"];
+    if (CreatorId == user.id) {
+      await deleteUser(id);
+      getAllUsers();
+    } else {
+      (function showToastMessage() {
+        toast.error("You are not owner of this article", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+      })();
+    }
   };
   const getAllUsers = async () => {
-    console.log("getAllUsers");
     let response = await getUsers();
-    // console.log("getAllUsers response ", response);
-
     setUsers(response.data);
   };
   const [data, setData] = useState([]);
   const getPost = async (postId) => {
-    console.log("getAllUsers");
     let response = await getUser(postId);
-    console.log("getAllUsers response ", response);
     setData(response.data);
   };
   return (
@@ -62,7 +96,9 @@ const SubResouceDialog = ({ postId }) => {
             />
             <span>Delete</span>
           </button>
-          <h6>** Edit/Delete (Only Works if your are content owner)</h6>
+          <h6 className={styles.gap}>
+            ** Edit/Delete (Only Works if your are content owner)
+          </h6>
         </div>
       </div>
     </div>

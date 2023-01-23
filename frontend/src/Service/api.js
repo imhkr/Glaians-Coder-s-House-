@@ -4,7 +4,6 @@ import axios from "axios";
 const usersUrl = "http://localhost:5500";
 
 export const getUsers = async () => {
-  console.log("getUsers called in api js");
   return await axios.get(`${usersUrl}/all`);
   // console.log("response", response);
   // return response.data;
